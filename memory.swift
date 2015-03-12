@@ -97,8 +97,8 @@ class HTMLPrinter: Printer {
         replace("<", "&lt;")
         replace(">", "&gt;")
         replace("  ", "&nbsp; ")
-        
-        return mutable
+
+        return mutable as NSString as! String
     }
     
     func print(color: PrintColor, _ str: String) {
@@ -129,7 +129,7 @@ struct Pointer: Hashable, Printable {
     }
     
     var description: String {
-        return NSString(format: "0x%0*llx", sizeof(address.dynamicType) * 2, address)
+        return NSString(format: "0x%0*llx", sizeof(address.dynamicType) * 2, address) as! String
     }
 
     func symbolInfo() -> Dl_info? {
@@ -281,7 +281,7 @@ struct Memory {
             }
             str.appendFormat("%02x", byte)
         }
-        return str
+        return str as NSString as! String
     }
 }
 
@@ -303,8 +303,8 @@ func pad(value: Any, minWidth: Int, padChar: String = " ", align: Alignment = .R
         accumulator += str
     }
     
-    if minWidth > countElements(str) {
-        for i in 0..<(minWidth - countElements(str)) {
+    if minWidth > count(str) {
+        for i in 0..<(minWidth - count(str)) {
             accumulator += padChar
         }
     }
@@ -317,7 +317,7 @@ func pad(value: Any, minWidth: Int, padChar: String = " ", align: Alignment = .R
 }
 
 func limit(str: String, maxLength: Int, continuation: String = "...") -> String {
-    if countElements(str) <= maxLength {
+    if count(str) <= maxLength {
         return str
     }
     
@@ -540,7 +540,10 @@ func scanmem<T>(var x: T, limit: Int) -> ScanResult {
             
             if memory != nil {
                 count++
-                let parent = entry.parent.map{ results[$0.address] }?
+                var parent: ScanResult? = nil
+                if let parentEntry = entry.parent {
+                    parent = results[parentEntry.address]
+                }
                 let result = ScanResult(entry: entry, parent: parent, memory: memory)
                 parent?.children.append(result)
                 results[entry.address] = result
