@@ -340,6 +340,10 @@ class ScanEntry {
     }
 }
 
+func STR(p: UnsafePointer<CChar>) -> String {
+    return String.fromCString(p) ?? "-"
+}
+
 struct ObjCClass {
     static let classMap: Dictionary<Pointer, ObjCClass> = {
         var tmpMap = Dictionary<Pointer, ObjCClass>()
@@ -389,15 +393,15 @@ struct ObjCClass {
             p.print(":")
             p.println()
             iterate(class_copyIvarList(classPtr, nil)) {
-                p.print("    Ivar: \(ivar_getName($0)) \(ivar_getTypeEncoding($0))")
+                p.print("    Ivar: \(STR(ivar_getName($0))) \(STR(ivar_getTypeEncoding($0)))")
                 p.println()
             }
             iterate(class_copyPropertyList(classPtr, nil)) {
-                p.print("    Property: \(property_getName($0)) \(property_getAttributes($0))")
+                p.print("    Property: \(STR(property_getName($0))) \(STR(property_getAttributes($0)))")
                 p.println()
             }
             iterate(class_copyMethodList(classPtr, nil)) {
-                p.print("    Method: \(sel_getName(method_getName($0))) \(method_getTypeEncoding($0))")
+                p.print("    Method: \(STR(sel_getName(method_getName($0)))) \(STR(method_getTypeEncoding($0)))")
                 p.println()
             }
         }
